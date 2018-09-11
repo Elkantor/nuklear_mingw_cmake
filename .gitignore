@@ -1,2 +1,14 @@
+<<<<<<< HEAD
 ./build
 
+=======
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+>>>>>>> d1db5b78c5f3c508b3ccfa3efce38cca874784ca
