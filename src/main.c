@@ -104,32 +104,31 @@ int main(void)
 				exit(1);
 		}
 
-		nuklear_init(win);
+		// Create the nuklear GUI context
+		struct nk_context* ctx = NULL;
+		ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS);
+
+		// Atlas is the default font
+        struct nk_font_atlas *atlas;
+        nk_glfw3_font_stash_begin(&atlas);
+        nk_glfw3_font_stash_end();
+
+		// The background color of the window
+		struct nk_colorf bg;
+    	bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+
 		
 		while (!glfwWindowShouldClose(win))
 		{
+				glfwGetWindowSize(win, &width, &height);
 				/* Input */
 				glfwPollEvents();
 				nk_glfw3_new_frame();
 
 				/* GUI */
-				nuklear_draw();
-	
-				/* -------------- EXAMPLES ---------------- */
-
-				// #ifdef INCLUDE_CALCULATOR
-				// 	calculator(ctx);
-				// #endif
-				// #ifdef INCLUDE_OVERVIEW
-				// 	overview(ctx);
-				// #endif
-				// #ifdef INCLUDE_NODE_EDITOR
-				// 	node_editor(ctx);
-				// #endif
-				/* ----------------------------------------- */
+				nuklear_draw(ctx, width, height);
 
 				/* Draw */
-				glfwGetWindowSize(win, &width, &height);
 				glViewport(0, 0, width, height);
 				glClear(GL_COLOR_BUFFER_BIT);
 				glClearColor(bg.r, bg.g, bg.b, bg.a);
