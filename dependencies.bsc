@@ -1,4 +1,4 @@
 BSC_PROJECT: 
-	[nuklear_opengl4]:^0.1.0	|	 
+	[nuklear_opengl3]:^0.1.0	|	 
 
 BSC_DEPENDENCIES: 
