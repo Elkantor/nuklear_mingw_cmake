@@ -1,19 +1,24 @@
 #pragma once
 
+#include "stdbool.h"
 #include "nuklear.h"
 #include "nuklear_glfw_gl3.h"
 
 
 void nuklear_draw(struct nk_context* out_ctx, const int in_width, const int in_height){
 
-    /* Main menu on top of the window */
-    {
-        struct nk_style* s = &out_ctx->style; 
-        struct nk_style_item style_item;
-        struct nk_vec2 vec2_item;
-        struct nk_color color_item;
+    /* Global variables of the app */
+    bool main_menu_hovered = false;
+    bool menu_left_hovered = false;
 
-        /****************************** Style menu_buttons *******************************/
+    /* Global variables to change the style of the components */
+    struct nk_style* s = &out_ctx->style; 
+    struct nk_style_item style_item;
+    struct nk_vec2 vec2_item;
+    struct nk_color color_item;
+
+    /********************************* Window main_menu top bar ******************************/
+        /***************************** Push style menu_button ***************************/
             // Change the hover color of menu_buttons
             style_item = nk_style_item_color(nk_rgba(70, 70, 70, 200));
             nk_style_push_style_item(out_ctx, &s->menu_button.hover, style_item);
@@ -30,7 +35,7 @@ void nuklear_draw(struct nk_context* out_ctx, const int in_width, const int in_h
             nk_style_push_float(out_ctx, &s->menu_button.border, 0.8f);
         /********************************************************************************/
 
-        /******************************** Style buttons *********************************/
+        /***************************** Push style buttons *******************************/
             // Change the hover color of buttons
             style_item = nk_style_item_color(nk_rgba(70, 70, 70, 200));
             nk_style_push_style_item(out_ctx, &s->button.hover, style_item);
@@ -42,8 +47,8 @@ void nuklear_draw(struct nk_context* out_ctx, const int in_width, const int in_h
             // Change the form of the buttons
             nk_style_push_float(out_ctx, &s->button.rounding, 0.0f);
         /********************************************************************************/
-        
-        /********************************* Style window *********************************/
+    
+        /***************************** Push style window ********************************/
             // Change the background color of the window
             style_item = nk_style_item_color(nk_rgba(39, 43, 51, 255));
             nk_style_push_style_item(out_ctx, &s->window.fixed_background, style_item);
@@ -56,56 +61,68 @@ void nuklear_draw(struct nk_context* out_ctx, const int in_width, const int in_h
             color_item = nk_rgba(15, 15, 15, 255);
             nk_style_push_color(out_ctx, &s->window.border_color, color_item);
         /********************************************************************************/
-        
-
-        nk_begin(out_ctx, "menu", nk_rect(0, 0, (float)in_width, 25), NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER_BOTTOM); 
-                nk_layout_row_begin(out_ctx, NK_STATIC, 18, 2);
+    
+        /***************************** Draw main_menu window ****************************/
+            nk_begin(out_ctx, "main_menu", nk_rect(0, 0, (float)in_width, 25), NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_BORDER_BOTTOM); 
                     if(nk_window_is_hovered(out_ctx)){
-                        printf(nk_window_has_focus(out_ctx, "menu") ? "ok" : "ko");
+                        main_menu_hovered = true;
                     }
-                    nk_layout_row_push(out_ctx, 35);
-                    if (nk_menu_begin_label(out_ctx, "Menu", NK_TEXT_LEFT, nk_vec2(300, 500))){
-                        static int check = nk_true;
-                        nk_layout_row_dynamic(out_ctx, 20, 1);
-                        nk_checkbox_label(out_ctx, "check", &check);
-                        nk_menu_end(out_ctx);
+                    nk_layout_row_begin(out_ctx, NK_STATIC, 18, 2);
+                        nk_layout_row_push(out_ctx, 35);
+                        if (nk_menu_begin_label(out_ctx, "Menu", NK_TEXT_LEFT, nk_vec2(300, 500))){
+                            static int check = nk_true;
+                            nk_layout_row_dynamic(out_ctx, 20, 1);
+                            nk_checkbox_label(out_ctx, "check", &check);
+                            nk_menu_end(out_ctx);
+                        }
+                    nk_layout_row_push(out_ctx, 40);
+                    if(nk_button_label(out_ctx, "Help")){
+
                     }
-                nk_layout_row_push(out_ctx, 40);
-                if(nk_button_label(out_ctx, "Help")){
+            nk_end(out_ctx);
+        /********************************************************************************/
 
-                }
-        nk_end(out_ctx);
-
-        /****************************** Style menu_buttons *******************************/
+        /***************************** Pop style menu_buttons ***************************/
             nk_style_pop_style_item(out_ctx);
             nk_style_pop_style_item(out_ctx);
             nk_style_pop_color(out_ctx);
             nk_style_pop_float(out_ctx);
         /********************************************************************************/
 
-        /******************************** Style buttons *********************************/
+        /***************************** Pop style buttons ********************************/
             nk_style_pop_style_item(out_ctx);
             nk_style_pop_color(out_ctx);
             nk_style_pop_float(out_ctx);
         /********************************************************************************/
-        
-        /********************************* Style window *********************************/
+    
+        /***************************** Pop style window *********************************/
             nk_style_pop_style_item(out_ctx);
             nk_style_pop_vec2(out_ctx);
             nk_style_pop_color(out_ctx);
         /********************************************************************************/
-        
-        
-    }
+    /*****************************************************************************************/
 
-    /* Menu left */
-    {
-        nk_begin(out_ctx, "menu_left", nk_rect(0, 25, 200, in_height), NK_WINDOW_BORDER); 
-                nk_layout_row_begin(out_ctx, NK_STATIC, 50, 1);
-                nk_layout_row_dynamic(out_ctx, 20, 1);
-                static int check = nk_true;
-                nk_checkbox_label(out_ctx, "check", &check);
+    /********************************* Window menu_left **************************************/
+        
+        nk_begin(out_ctx, "menu_left", nk_rect(0, 25, 200, in_height), NK_WINDOW_BORDER);
+            if(nk_window_is_hovered(out_ctx)){
+                menu_left_hovered = true;
+            }
+            nk_layout_row_begin(out_ctx, NK_STATIC, 50, 1);
+            nk_layout_row_dynamic(out_ctx, 20, 1);
+            static int check = nk_true;
+            nk_checkbox_label(out_ctx, "check", &check);
         nk_end(out_ctx);
-    }
 
+    /*****************************************************************************************/
+
+
+    /******************************** Handle events *****************************************/
+        /* Change focus to main_menu if it is hovered */
+        if(main_menu_hovered)
+            nk_window_set_focus(out_ctx, "main_menu");
+        /* Change focus to menu_left if it is hovered */
+        if(menu_left_hovered)
+            nk_window_set_focus(out_ctx, "menu_left");
+    /****************************************************************************************/
 }
