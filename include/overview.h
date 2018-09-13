@@ -1,3 +1,4 @@
+#pragma once
 #include "nuklear.h"
 
 static int
