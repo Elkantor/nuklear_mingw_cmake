@@ -1456,7 +1456,8 @@ enum nk_panel_flags {
     NK_WINDOW_SCROLL_AUTO_HIDE  = NK_FLAG(7),
     NK_WINDOW_BACKGROUND        = NK_FLAG(8),
     NK_WINDOW_SCALE_LEFT        = NK_FLAG(9),
-    NK_WINDOW_NO_INPUT          = NK_FLAG(10)
+    NK_WINDOW_NO_INPUT          = NK_FLAG(10),
+    NK_WINDOW_BORDER_BOTTOM     = NK_FLAG(11),
 };
 /*/// #### nk_begin
 /// Starts a new window; needs to be called every frame for every
@@ -14723,7 +14724,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     win->group_border = 1.0f;
     win->tooltip_border = 1.0f;
     win->popup_border = 1.0f;
-    win->border = 2.0f;
+    win->border = 1.0f;
     win->min_row_height_padding = 8;
 
     win->padding = nk_vec2(4,4);
@@ -15489,7 +15490,7 @@ NK_LIB float
 nk_panel_get_border(const struct nk_style *style, nk_flags flags,
     enum nk_panel_type type)
 {
-    if (flags & NK_WINDOW_BORDER) {
+    if (flags & NK_WINDOW_BORDER | NK_WINDOW_BORDER_BOTTOM) {
         switch (type) {
         default:
         case NK_PANEL_WINDOW: return style->window.border;
@@ -15600,6 +15601,8 @@ nk_panel_begin(struct nk_context *ctx, const char *title, enum nk_panel_type pan
     if (win->flags & NK_WINDOW_BORDER) {
         layout->border = nk_panel_get_border(style, win->flags, panel_type);
         layout->bounds = nk_shrink_rect(layout->bounds, layout->border);
+    } else if (win->flags & NK_WINDOW_BORDER_BOTTOM) {
+        layout->border = nk_panel_get_border(style, win->flags, panel_type);
     } else layout->border = 0;
     layout->at_y = layout->bounds.y;
     layout->at_x = layout->bounds.x;
@@ -15930,6 +15933,20 @@ nk_panel_end(struct nk_context *ctx)
         struct nk_rect b = window->bounds;
         b.h = padding_y - window->bounds.y;
         nk_stroke_rect(out, b, 0, layout->border, border_color);
+    }
+
+    /* window border bottom, top, right or left */
+    if (layout->flags & NK_WINDOW_BORDER_BOTTOM)
+    {
+        struct nk_color border_color = nk_panel_get_border_color(style, layout->type);
+        const float padding_y = (layout->flags & NK_WINDOW_MINIMIZED)
+            ? (style->window.border + window->bounds.y + layout->header_height)
+            : ((layout->flags & NK_WINDOW_DYNAMIC)
+                ? (layout->bounds.y + layout->bounds.h + layout->footer_height)
+                : (window->bounds.y + window->bounds.h));
+        struct nk_rect b = window->bounds;
+        b.h = padding_y - window->bounds.y;
+        nk_stroke_line(out, b.x, b.h, b.w, b.h, layout->border, border_color);
     }
 
     /* scaler */
